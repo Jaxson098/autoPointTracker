@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Drone Race</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: space-around;
+        }
+        .score-box {
+            flex: 1;
+            margin: 10px;
+            text-align: center;
+            font-size: 64px;
+            font-weight: bold;
+            line-height: 150px;
+            border: 2px solid black;
+        }
+        #redBox {
+            background-color: red;
+            color: white;
+        }
+        #blueBox {
+            background-color: blue;
+            color: white;
+        }
+        #gameTime {
+            background-color: black;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Current Scores</h1>
+    <div class="container">
+        <div id = "gameTime" class ="score-box">0</div>
+    </div>
+
+    <div class="container">
+        <div id="redBox" class="score-box">0</div>
+        <div id="blueBox" class="score-box">0</div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+        var redBox = document.getElementById('redBox');
+        var blueBox = document.getElementById('blueBox');
+        var gameTime = document.getElementById('gameTime');
+
+        socket.on('fileContent', function(data) {
+            var jsonData = JSON.parse(data);
+            redBox.textContent = jsonData.red;
+            blueBox.textContent = jsonData.blue;
+            gameTime.textContent = 'Game Time: ' + jsonData.gameTime;
+        });
+    </script>
+</body>
+</html>

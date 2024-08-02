@@ -1,9 +1,14 @@
 import serial
 import random
 import keyboard
+import time
 
 ports = {}
 beacon_amount = 0
+p = 0
+avg = 0
+running = False
+lastChanged = None
 
 for i in range(10):
     serialPort = f"/dev/ttyUSB{i}"
@@ -15,103 +20,86 @@ for i in range(10):
 
 print(f"ports: {ports}")
 
-def sendGame(event=None):
+def sendGame():
     for i in ports:
-        i.write(b"Wack-A-Mole\n")
+        ports[str(i)].write(b"Wack-A-Mole\n")
         print(f"port {i}s gamemode set to Wack-A-Mole")
 
-sendGame()
+# sendGame()
+
 
 for i in ports:
     beacon_amount += 1
     print(f"beacon_amount: {beacon_amount}")
 
 def changeRandom():
-    toChange = random.randint(1, beacon_amount)
-    ports[str(toChange)].write()
-    print(f"chnaged port {toChange}")
+    global lastChanged
+    while True:
+        toChange = random.randint(0, beacon_amount - 1)
+        print(f"to change: {toChange}")
 
+        if toChange != lastChanged:
+            ports[str(toChange)].write(b"GREEN\n")
+            lastChanged = toChange
+            print(f"chnaged port {toChange}")
+            break
+        else:
+            print("same as last changed regenerating...")
 
+# def getScores():
+#     global p
+#     for i  in ports:
+#         ser = ports[str(i)]
+#         data = ser.readline().decode('utf-8', errors='ignore').strip()
+#         if data == "POINT":
+#             p += 1
+#             print(f"points: {p}")
+#             changeRandom()
 
+def getScores():
+    global p
+    for i in ports:
+        try:
+            ser = ports[str(i)]
+            # Attempt to read a line from the serial port
+            data = ser.readline().decode('utf-8', errors='ignore').strip()
+            if data == "POINT":
+                p += 1
+                print(f"points: {p}")
+                changeRandom()
+        except serial.serialutil.SerialException as e:
+            # Log the error or take other actions as needed
+            print(f"Error reading from serial port {i}: {e}. Skipping this port.")
 
+while True:
+    if keyboard.is_pressed('space'):
+        sendGame()
+        print("space pressed")
+        startTime = time.time()
+        elapsedTime = 0
+        p = 0
+        running = True
+        changeRandom()
 
+    while running and elapsedTime <= 60:
+        getScores()
+        currentTime = time.time()
+        elapsedTime = currentTime - startTime
+        # print(elapsedTime)
 
+        if keyboard.is_pressed('enter'):
+            print("canceled (enter)")
+            elapsedTime = 0
+            p = 0
+            avg = 0
+            running = False
+            for i in ports:
+                ports[str(i)].write(b"RESET\n")
+            break
 
-
-
-
-
-
-
-
-
-
-
-
-
-# beacon_amount -= 1
-
-# third = beacon_amount / 3
-# print(f"third: {round(third)}")
-
-# amountToChange = random.randint(1, round(third))
-# print(f"amountToChange: {amountToChange}")
-
-# beaconNumToChange = []
-
-# for i in range(amountToChange):
-#     beaconNumToChange[str(i)] = random.randint(1, beacon_amount)
-
-# if keyboard.is_pressed('space'):
-#     for i in beaconNumToChange:
-#         ports[str(i)].write(b"change\n")
-
-# beaconNumToChange = [random.randint(1, beacon_amount) for i in range(amountToChange)]
-# print(f"beaconNumsToChange: {beaconNumsToChange}")
-# while True:
-#     for i in beaconNumsToChange:
-#         ports[str(i)].write(b"change\n")
-# import keyboard
-# import serial
-
-# port = serial.Serial("/dev/ttyUSB0", 9600)
-
-# def sendGame():
-#     port.write(b"Wack-A-Mole\n")
-#     print("space")
-
-# def sendGreen():
-#     port.write(b"GREEN\n")
-#     print("enter")
-
-# while True:
-#     keyboard.on_press_key('space', sendGame)
-#     keyboard.on_press_key('enter', sendGreen)
-
-import keyboard
-import serial
-
-port = serial.Serial("/dev/ttyUSB0", 9600)
-# data = port.readline().decode('utf-8', errors='ignore').strip()
-# print(data)
-
-def sendGame(event=None):
-    port.write(b"Wack-A-Mole\n")
-    print("space")
-
-def sendGreen(event=None):  # Add event=None to accept the event argument
-    port.write(b"GREEN\n")
-    print("enter")
-
-# Make sure to call keyboard.unhook_all() at the end to avoid adding multiple hooks if you run the script multiple times.
-keyboard.unhook_all()
-
-keyboard.on_press_key('space', sendGame)
-keyboard.on_press_key('enter', sendGreen)
-
-# Keep the script running to listen for key events
-keyboard.wait('esc')
-
-
-    # data = port.readline().decode('utf-8', errors='ignore').strip()
-    # print(f"\ndata: {data}\n")
+        if elapsedTime > 60:
+            print("elapsedTime > 60")
+            running = False
+            for i in ports:
+                ports[str(i)].write(b"RESET\n")
+            break 

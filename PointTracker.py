@@ -37,6 +37,10 @@ def getPorts():
         except serial.SerialException as e:
             print(f"beacon {i} not connected")
 
+getPorts()
+for i in ports:
+    i.write("CaptureFlag")
+
 def getScores():
     global b
     global r
@@ -56,6 +60,10 @@ def resetBeacons():
     global ports
     startB = dict(list(ports.items())[len(ports)//2:])
     startR = dict(list(ports.items())[:len(ports)//2])
+    for i in startB:
+        i.write("Blue")
+    for i in startR:
+        i.write("Red")
     print(f"\nstartB = {startB}\n")
     print(f"\nstartR = {startR}\n")
 
@@ -87,7 +95,7 @@ while True:
         updatePoints(r,b,elapsedTime)
 
         if keyboard.is_pressed('enter'):
-            print("elapsed time > 180")
+            print("canceled (enter)")
 
             r = 0
             b = 0

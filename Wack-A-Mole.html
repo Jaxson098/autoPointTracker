@@ -16,29 +16,29 @@
             line-height: 150px;
             border: 2px solid black;
         }
-        #redBox {
+        #pointsBox {
             background-color: red;
             color: white;
         }
-        #blueBox {
+        #avgTimezBox {
             background-color: blue;
             color: white;
         }
-        #gameTime {
+        #gameTime2 {
             background-color: black;
             color: white;
         }
     </style>
 </head>
 <body>
-    <h1>Capture the flag</h1>
+    <h1>Wack-A-Mole</h1>
     <div class="container">
-        <div id = "gameTime" class ="score-box">0</div>
+        <div id = "gameTime2" class ="score-box">0</div>
     </div>
 
     <div class="container">
-        <div id="redBox" class="score-box">0</div>
-        <div id="blueBox" class="score-box">0</div>
+        <div id="pointsBox" class="score-box">0</div>
+        <div id="avgTimeBox" class="score-box">0</div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>

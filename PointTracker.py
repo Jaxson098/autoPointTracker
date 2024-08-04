@@ -58,19 +58,20 @@ def getScores():
 
 def resetBeacons():
     global ports
-    startB = dict(list(ports.items())[len(ports)//2:])
+    # startB = dict(list(ports.items())[len(ports)//2:])
     startR = dict(list(ports.items())[:len(ports)//2])
-    for i in startB:
-        i.write("Blue")
     for i in startR:
-        i.write("Red")
-    print(f"\nstartB = {startB}\n")
+        i.write(b"Red\n")
     print(f"\nstartR = {startR}\n")
 
 while True:
     if keyboard.is_pressed('esc'):
         print("clicked esc running sys.exit()...")
         sys.exit()
+
+    if keyboard.is_pressed('r'):
+        resetBeacons()
+        print("clicked r reseting beacons...")
 
     if keyboard.is_pressed('space'):
         

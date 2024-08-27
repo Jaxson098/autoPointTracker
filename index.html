@@ -28,10 +28,19 @@
             background-color: black;
             color: white;
         }
+        #message {
+            background-color: grey;
+            color: black;
+        }
     </style>
 </head>
 <body>
     <h1>Capture the flag</h1>
+
+    <div class="container">
+        <div id = "message" class ="score-box">0</div>
+    </div>
+
     <div class="container">
         <div id = "gameTime" class ="score-box">0</div>
     </div>
@@ -47,12 +56,14 @@
         var redBox = document.getElementById('redBox');
         var blueBox = document.getElementById('blueBox');
         var gameTime = document.getElementById('gameTime');
+        var message = document.getElementById('message');
 
         socket.on('fileContent', function(data) {
             var jsonData = JSON.parse(data);
             redBox.textContent = jsonData.red;
             blueBox.textContent = jsonData.blue;
             gameTime.textContent = 'Game Time: ' + jsonData.gameTime;
+            message.textContent = jsonData.message;
         });
     </script>
 </body>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Drone Race Admin</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Admin</h1>
+
+    <div class="container">
+        <h1 style="text-align: center;">Wack-A-Mole Gamemode</h1>
+    </div>
+
+    <div class="container">
+        <button onclick="startWackGame()" style = "background-color: green; color: white; width: 700px; height: 200px; font-size: 50px;" >Start Wack-A-Mole Gamemode</button>
+        <button onclick="stopWackGame()" style = "background-color: red; color: white; width: 700px; height: 200px; font-size: 50px;" >Stop Wack-A-Mole Gamemode</button>
+    </div>
+
+    <div class="container">
+        <h1 style="text-align: center;"> </h1>
+        <h1 style="text-align: center;"> </h1>
+    </div>
+
+    <div class="container">
+        <h1 style="text-align: center;">Capture The Flag Gamemode</h1>
+    </div>
+
+    <div class="container">
+        <button onclick="startCaptureFlagGame()" style = "background-color: green; color: white; width: 700px; height: 200px; font-size: 50px;" >Start Capture The Flag Gamemode</button>
+        <button onclick="stopCaptureFlagGame()" style = "background-color: red; color: white; width: 700px; height: 200px; font-size: 50px;" >Stop Capture The Flag Gamemode</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+        function startWackGame(){
+            socket.emit('startWack');
+        }
+        function stopWackGame(){
+            socket.emit('stopWack');
+        }
+        function startCaptureFlagGame(){
+            socket.emit('startCapture');
+        }
+        function stopCaptureFlagGame(){
+            socket.emit('stopCapture');
+        }
+    </script>
+</body>
+</html>

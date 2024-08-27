@@ -8,10 +8,10 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-const filePath = '/home/jaxson/autoPointTracker/game_state.json';
+const filePath = '/home/jaxson/autoPointTracker/wack_state.json';
 
 app.get('/', (req, res) => {
-    res.sendFile('/home/jaxson/autoPointTracker/index.html');
+    res.sendFile('/home/jaxson/autoPointTracker/Wack-A-Mole.html');
 });
 
 io.on('connection', (socket) => {

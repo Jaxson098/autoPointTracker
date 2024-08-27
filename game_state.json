@@ -1,5 +1,6 @@
 {
     "red": 0,
     "blue": 0,
-    "gameTime": 0
+    "gameTime": 0,
+    "message": "Game Mode: Capture The Flag"
 }

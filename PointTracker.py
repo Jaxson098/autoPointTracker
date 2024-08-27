@@ -16,16 +16,17 @@ elapsedTime = 0
 ports = {}
 portAmount = 0
 
-def updatePoints(r,b,elapsedTime):
+def updatePoints(r,b,elapsedTime,message):
     #load the json file so the values can be incremnted
-    with open('/home/jaxson/AutoPointTracker/game_state.json', 'r') as game_state:
+    with open('/home/jaxson/autoPointTracker/game_state.json', 'r') as game_state:
         scores = json.load(game_state)
 
     scores["red"] = r
     scores["blue"] = b
-    scores["gameTime"] = round(180-elapsedTime)
+    scores["gameTime"] = round(90-elapsedTime)
+    scores["message"] = message
 
-    with open('/home/jaxson/AutoPointTracker/game_state.json', 'w') as game_state:
+    with open('/home/jaxson/autoPointTracker/game_state.json', 'w') as game_state:
         json.dump(scores, game_state)
 
 def getPorts():
@@ -36,10 +37,6 @@ def getPorts():
             print(f"beacon {i} connected")
         except serial.SerialException as e:
             print(f"beacon {i} not connected")
-
-getPorts()
-for i in ports:
-    i.write("CaptureFlag")
 
 def getScores():
     global b
@@ -54,46 +51,70 @@ def getScores():
         elif data == "RED":
             r += 1  
             print(f"incremented red to {r}")
-    return b, r, 
+    return b, r
+
+def sendGame():
+    for i in ports:
+        ports[str(i)].write(b"CaptureFlag\n")
+        print(f"port {i}s gamemode set to CaptureFlag")
 
 def resetBeacons():
-    global ports
     # startB = dict(list(ports.items())[len(ports)//2:])
     startR = dict(list(ports.items())[:len(ports)//2])
     for i in startR:
-        i.write(b"Red\n")
-    print(f"\nstartR = {startR}\n")
+        ports[str(i)].write(b"RED\n")
+    # print(f"\nstartR = {startR}\n")
+
+getPorts()
+sendGame()
 
 while True:
     if keyboard.is_pressed('esc'):
+        for i in ports:
+            ports[str(i)].write(b"STOP\n") 
+        print("exiting game mode")
         print("clicked esc running sys.exit()...")
         sys.exit()
 
-    if keyboard.is_pressed('r'):
-        resetBeacons()
-        print("clicked r reseting beacons...")
 
-    if keyboard.is_pressed('space'):
+    # if keyboard.is_pressed('r'):
+    #     # resetBeacons()
+    #     print("clicked r re seting beacons...")
+
+    if keyboard.is_pressed('space'): 
         
-        getPorts()
+        sendGame()
         resetBeacons()
-        running = True
-        print("space pressed")
-        startTime = time.time()
+
         elapsedTime = 0
         r = 0
         b = 0
-        
-        updatePoints(r,b,elapsedTime)
 
-    while running and elapsedTime <= 180:
+        print("space pressed")
+
+
+        updatePoints(r,b,elapsedTime, "3")
+        time.sleep(1)
+        print("\n3\n")
+        updatePoints(r,b,elapsedTime, "2")
+        time.sleep(1)
+        print("2\n")
+        updatePoints(r,b,elapsedTime, "1")
+        time.sleep(1)
+        print("1\n")
+        updatePoints(r,b,elapsedTime, "GO!")
+
+        running = True
+        startTime = time.time()
+        
+    while running and elapsedTime <= 90:
 
         getScores() 
 
         currentTime = time.time()
         elapsedTime = currentTime - startTime
         
-        updatePoints(r,b,elapsedTime)
+        updatePoints(r,b,elapsedTime,"Game Mode: Capture The Flag")
 
         if keyboard.is_pressed('enter'):
             print("canceled (enter)")
@@ -101,10 +122,21 @@ while True:
             r = 0
             b = 0
             elapsedTime = 0
-            updatePoints(r,b,elapsedTime)
+            updatePoints(r,b,elapsedTime,"Game Mode: Capture The Flag (reset)")
+
+            for i in ports:
+                ports[str(i)].write(b"STOP\n")
+            resetBeacons()
+
             running = False
             break
 
         if elapsedTime > 180:
+            updatePoints(r,b,elapsedTime,"Game Over! Good Job!")
+
+            for i in ports:
+                ports[str(i)].write(b"STOP\n")
+            resetBeacons()
+
             running = False
             break

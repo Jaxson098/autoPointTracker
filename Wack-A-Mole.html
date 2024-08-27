@@ -17,42 +17,43 @@
             border: 2px solid black;
         }
         #pointsBox {
-            background-color: red;
+            background-color: green;
             color: white;
         }
-        #avgTimezBox {
-            background-color: blue;
-            color: white;
-        }
-        #gameTime2 {
+        #gameTime {
             background-color: black;
             color: white;
+        }
+        #message{
+            background-color: grey;
+            color: black;
         }
     </style>
 </head>
 <body>
     <h1>Wack-A-Mole</h1>
+
     <div class="container">
-        <div id = "gameTime2" class ="score-box">0</div>
+        <div id="message" class="score-box">0</div>
     </div>
 
     <div class="container">
         <div id="pointsBox" class="score-box">0</div>
-        <div id="avgTimeBox" class="score-box">0</div>
+        <div id="gameTime" class="score-box">0</div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
         var socket = io();
-        var redBox = document.getElementById('redBox');
-        var blueBox = document.getElementById('blueBox');
+        var pointsBox = document.getElementById('pointsBox');
         var gameTime = document.getElementById('gameTime');
+        var message = document.getElementById('message');
 
         socket.on('fileContent', function(data) {
             var jsonData = JSON.parse(data);
-            redBox.textContent = jsonData.red;
-            blueBox.textContent = jsonData.blue;
+            pointsBox.textContent = jsonData.points;
             gameTime.textContent = 'Game Time: ' + jsonData.gameTime;
+            message.textContent = jsonData.message;
         });
     </script>
 </body>
